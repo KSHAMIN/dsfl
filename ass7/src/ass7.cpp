@@ -94,6 +94,58 @@ GraphVertex* Kruskal::GetVertex()
 	}
 }
 
+void Kruskal::marked(GraphEdge *m)
+{
+	GraphEdge *temp,*edgeptr;
+	GraphVertex *vptr = g->fv;
+	while(vptr != NULL)
+	{
+		edgeptr = vptr->nep;
+		if(edgeptr != NULL)
+		{
+			while(edgeptr->nep != NULL)
+			{
+				if(edgeptr == m)
+				{
+					edgeptr->flag = 1;
+					return;
+				}
+				edgeptr = edgeptr->nep;
+			}
+		}
+		vptr = vptr->nvp;
+	}
+}
+
+GraphEdge *Kruskal::MinEdge()
+{
+	GraphEdge *temp,*edgeptr;
+	GraphVertex *vptr = g->fv;
+	int mwt = 999;
+	while(vptr != NULL)
+	{
+		edgeptr = vptr->nep;
+		if(edgeptr != NULL)
+		{
+			while(edgeptr->nep != NULL)
+			{
+				if(edgeptr->flag != 1)
+				{
+					if(mwt > edgeptr->weight)
+					{
+						mwt = edgeptr->weight;
+						temp = edgeptr;
+					}
+				}
+				edgeptr = edgeptr->nep;
+			}
+		}
+		vptr = vptr->nvp;
+	}
+	marked(temp);
+	return temp;
+}
+
 void Kruskal::InsertVertex()
 {
 	GraphVertex *nptr,*lptr;			//nptr = new pointer and lptr = location pointer
@@ -128,6 +180,28 @@ GraphVertex* Kruskal::FindVertex(char c)
 	return NULL;
 }
 
+void Kruskal::DisplayGraph()
+{
+	GraphVertex *vptr = g->fv;
+	GraphEdge *EdgePtr;
+	while(vptr != NULL)
+	{
+		cout << vptr->no;
+		EdgePtr = vptr->nep;
+		if(EdgePtr != NULL)
+		{
+			cout << "||" << "<<" << EdgePtr->weight << ">>" << EdgePtr->dvp->no;
+			while(EdgePtr->nep != NULL)
+			{
+				EdgePtr = EdgePtr->nep;
+				cout << "\t" << "<<" << EdgePtr->weight << ">>" << EdgePtr->dvp->no;
+			}
+		}
+		vptr = vptr->nvp;
+		cout << endl;
+	}
+}
+
 int Kruskal::InsertEdge(char sv,char dv,int wt)			//sv = source vertex,dv = destination vertex,wt = weight
 {
 	GraphVertex *sptr,*dptr;							//sptr = source pointer,dptr = destination pointer
@@ -148,6 +222,54 @@ int Kruskal::InsertEdge(char sv,char dv,int wt)			//sv = source vertex,dv = dest
 		dptr = FindVertex(dv);
 	}
 
+	if(sptr->nep == NULL)
+	{
+		GraphEdge *NewEdge;
+		NewEdge = new GraphEdge;
+		sptr->nep = NewEdge;
+		NewEdge->dvp = dptr;
+		NewEdge->nep = NULL;
+		NewEdge->weight = wt;
+		NewEdge->flag = 0;
+	}
+	else
+	{
+		GraphEdge *tempedge,*NewEdge;
+		NewEdge = new GraphEdge;
+		tempedge = sptr->nep;
+		while(tempedge->nep != NULL)
+			tempedge = tempedge->nep;
+		tempedge->nep = NewEdge;
+		NewEdge->dvp = dptr;
+		NewEdge->nep = NULL;
+		NewEdge->weight = wt;
+		NewEdge->flag = 0;
+	}
+
+	if(dptr->nep == NULL)
+	{
+		GraphEdge *NewEdge;
+		NewEdge = new GraphEdge;
+		dptr->nep = NewEdge;
+		NewEdge->dvp = sptr;
+		NewEdge->nep = NULL;
+		NewEdge->weight = wt;
+		NewEdge->flag = 0;
+	}
+	else
+	{
+		GraphEdge *tempedge,*NewEdge;
+		NewEdge = new GraphEdge;
+		tempedge = dptr->nep;
+		while(tempedge->nep != NULL)
+			tempedge = tempedge->nep;
+		tempedge->nep = NewEdge;
+		NewEdge->dvp = sptr;
+		NewEdge->nep = NULL;
+		NewEdge->weight = wt;
+		NewEdge->flag = 0;
+	}
+	return 1;
 }
 
 int menu()
@@ -184,6 +306,9 @@ int main()
 			cout << "\nEnter weight:";
 			cin >> wt;
 			k.InsertEdge(v1,v2,wt);
+			break;
+		case 4:
+			k.DisplayGraph();
 			break;
 		}
 	}
