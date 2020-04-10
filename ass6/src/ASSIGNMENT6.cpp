@@ -1,6 +1,6 @@
 //============================================================================
 // Name        : ASSIGNMENT6.cpp
-// Author      : ABHINAV
+// Author      : 
 // Version     :
 // Copyright   : Your copyright notice
 // Description : Hello World in C++, Ansi-style
